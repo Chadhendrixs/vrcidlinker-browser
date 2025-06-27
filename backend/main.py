@@ -4,6 +4,7 @@ from fastapi.middleware.cors import CORSMiddleware
 from models import Server
 from dotenv import load_dotenv
 import requests
+import os
 
 load_dotenv()
 
