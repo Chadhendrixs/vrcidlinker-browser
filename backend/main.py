@@ -2,7 +2,17 @@ from fastapi import FastAPI, HTTPException
 from database import SessionLocal, engine, Base
 from fastapi.middleware.cors import CORSMiddleware
 from models import Server
+from dotenv import load_dotenv
 import requests
+
+load_dotenv()
+
+API_KEY = os.getenv("PUBLISH_API_KEY")
+
+def verify_api_key(request: Request):
+    key = request.headers.get("X-API-Key")
+    if key != API_KEY:
+        raise HTTPException(status_code=403, detail="Forbidden")
 
 app = FastAPI()
 
@@ -39,7 +49,7 @@ def get_invite(code: str):
     return {**discord_data, "custom_tags": tags}
 
 @app.post("/publish")
-def publish_server(invite_code: str, tags: str):  # tags = comma-separated string
+def publish_server(invite_code: str, tags: str, request: Request = Depends(verify_api_key)):  # tags = comma-separated string
     db = SessionLocal()
     existing = db.query(Server).filter(Server.invite_code == invite_code).first()
     if existing:
