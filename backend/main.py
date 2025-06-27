@@ -1,6 +1,6 @@
 from fastapi import FastAPI, HTTPException
-from .database import SessionLocal, engine
-from .models import Base, Server
+from database import SessionLocal, engine
+from models import Server
 import requests
 
 Base.metadata.create_all(bind=engine)
