@@ -1,25 +1,28 @@
-import logo from './logo.svg';
-import './App.css';
+import React, { useEffect, useState } from 'react';
+import { Link } from 'react-router-dom';
 
 const API_URL = process.env.REACT_APP_API_URL;
 
 function App() {
+  const [servers, setServers] = useState([]);
+
+  useEffect(() => {
+    fetch(`${API_URL}/servers`)
+      .then(res => res.json())
+      .then(setServers);
+  }, []);
+
   return (
-    <div className="App">
-      <header className="App-header">
-        <img src={logo} className="App-logo" alt="logo" />
-        <p>
-          Edit <code>src/App.js</code> and save to reload.
-        </p>
-        <a
-          className="App-link"
-          href="https://reactjs.org"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          Learn React
-        </a>
-      </header>
+    <div>
+      <h1>Server Directory</h1>
+      {servers.map((server, i) => (
+        <div key={i} style={{ marginBottom: "1rem" }}>
+          <Link to={`/invite/${server.invite_code}`}>
+            <h2>{server.invite_code}</h2>
+          </Link>
+          <p>Tags: {server.tags}</p>
+        </div>
+      ))}
     </div>
   );
 }
