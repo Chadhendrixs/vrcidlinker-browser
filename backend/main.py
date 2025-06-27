@@ -1,5 +1,5 @@
 from fastapi import FastAPI, HTTPException
-from database import SessionLocal, engine
+from database import SessionLocal, engine, Base
 from models import Server
 import requests
 
