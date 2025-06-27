@@ -1,0 +1,12 @@
+# Global
+.env
+__pycache__/
+*.pyc
+
+# Python specific
+backend/__pycache__/
+backend/*.pyc
+
+# Node/React
+frontend/node_modules/
+frontend/build/
