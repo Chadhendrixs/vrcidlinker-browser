@@ -1,6 +1,8 @@
 import logo from './logo.svg';
 import './App.css';
 
+const API_URL = process.env.REACT_APP_API_URL;
+
 function App() {
   return (
     <div className="App">
