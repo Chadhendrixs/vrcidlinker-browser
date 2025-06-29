@@ -8,6 +8,10 @@ export default function App() {
   const [servers, setServers] = useState([]);
   const [menuOpen, setMenuOpen] = useState(false);
   const [isMobile, setIsMobile] = useState(window.innerWidth <= 768);
+  const [searchQuery, setSearchQuery] = useState("");
+  const [allTags, setAllTags] = useState([]);
+  const [suggestedTags, setSuggestedTags] = useState([]);
+
 
   useEffect(() => {
     const handleResize = () => setIsMobile(window.innerWidth <= 768);
@@ -16,61 +20,120 @@ export default function App() {
   }, []);
 
   useEffect(() => {
-  const fetchData = async () => {
-    try {
-      const res = await fetch(`${API_URL}/servers`);
-      const data = await res.json();
+    const fetchData = async () => {
+      try {
+        const res = await fetch(`${API_URL}/servers`);
+        const data = await res.json();
 
-      const enriched = await Promise.all(
-        data.map(async (server) => {
-          if (server.name && server.member_count !== null) return server;
+        const enriched = await Promise.all(
+          data.map(async (server) => {
+            if (server.name && server.member_count !== null) return server;
 
-          try {
-            const res = await fetch(
-              `https://discord.com/api/invites/${server.invite_code}?with_counts=true`
-            );
-            if (!res.ok) throw new Error();
-            const json = await res.json();
-            const guild = json.guild || {};
-            const profile = json.profile || {};
-            const guild_id = guild.id;
+            try {
+              const res = await fetch(
+                `https://discord.com/api/invites/${server.invite_code}?with_counts=true`
+              );
+              if (!res.ok) throw new Error();
+              const json = await res.json();
+              const guild = json.guild || {};
+              const profile = json.profile || {};
+              const guild_id = guild.id;
 
-            const buildImageUrl = (hash, id, type) => {
-              if (!hash || !id) return null;
-              const ext = hash.startsWith("a_") ? "gif" : "webp";
-              if (type === "icon")
-                return `https://cdn.discordapp.com/icons/${id}/${hash}.${ext}`;
-              if (type === "banner")
-                return `https://cdn.discordapp.com/banners/${id}/${hash}.${ext}?size=512`;
-              return null;
-            };
+              const buildImageUrl = (hash, id, type) => {
+                if (!hash || !id) return null;
+                const ext = hash.startsWith("a_") ? "gif" : "webp";
+                if (type === "icon")
+                  return `https://cdn.discordapp.com/icons/${id}/${hash}.${ext}`;
+                if (type === "banner")
+                  return `https://cdn.discordapp.com/banners/${id}/${hash}.${ext}?size=512`;
+                return null;
+              };
 
-            return {
-              ...server,
-              name: guild.name || server.invite_code,
-              description: guild.description,
-              member_count: json.approximate_member_count,
-              custom_tag: profile.tag,
-              boost_tier: guild.premium_tier,
-              icon_url: buildImageUrl(guild.icon, guild_id, "icon"),
-              banner_url: buildImageUrl(guild.banner, guild_id, "banner"),
-            };
-          } catch {
-            return server;
-          }
-        })
-      );
+              return {
+                ...server,
+                name: guild.name || server.invite_code,
+                description: guild.description,
+                member_count: json.approximate_member_count,
+                custom_tag: profile.tag,
+                boost_tier: guild.premium_tier,
+                icon_url: buildImageUrl(guild.icon, guild_id, "icon"),
+                banner_url: buildImageUrl(guild.banner, guild_id, "banner"),
+              };
+            } catch {
+              return server;
+            }
+          })
+        );
 
-      setServers(enriched);
-    } catch (err) {
-      console.error("Failed to fetch servers:", err);
+        setServers(enriched);
+
+        const allTags = Array.from(
+          new Set(
+            enriched.flatMap((s) =>
+              s.tags?.split(",").map((t) => t.trim().toLowerCase()) || []
+            )
+          )
+        );
+        setAllTags(allTags);
+
+      } catch (err) {
+        console.error("Failed to fetch servers:", err);
+        }
+      };
+  
+      fetchData();
+    }, []);
+
+
+  useEffect(() => {
+    const query = searchQuery.toLowerCase();
+
+    if (query.includes("#")) {
+      const tagChunks = query
+        .split(",")
+        .map((tag) => tag.trim().replace(/^#/, ""))
+        .filter(Boolean);
+
+      if (tagChunks.length > 0) {
+        const matches = allTags
+          .filter((tag) =>
+            tagChunks.some((input) => tag.includes(input))
+          )
+          .slice(0, 10);
+
+        setSuggestedTags(matches);
+      } else {
+        setSuggestedTags([]);
+      }
+    } else {
+      setSuggestedTags([]);
     }
-  };
+  }, [searchQuery, allTags]);
 
-  fetchData(); // initial fetch
-  const interval = setInterval(fetchData, 600000); // refetch every 10m
-  return () => clearInterval(interval); // cleanup on unmount
-}, []);
+  const filteredServers = servers.filter((server) => {
+    const query = searchQuery.toLowerCase();
+    const tags = (server.tags || "").toLowerCase();
+    const name = (server.name || "").toLowerCase();
+    const desc = (server.description || "").toLowerCase();
+
+    if (query.includes("#")) {
+      const tagChunks = query
+        .split(",")
+        .map((tag) => tag.trim().replace(/^#/, ""))
+        .filter(Boolean);
+
+      return tagChunks.every((tag) =>
+        tags.split(",").some((t) => t.trim().includes(tag))
+      );
+    }
+
+    return (
+      name.includes(query) ||
+      desc.includes(query) ||
+      tags.split(",").some((tag) => tag.trim().includes(query))
+    );
+  });
+
 
 
   return (
@@ -82,8 +145,26 @@ export default function App() {
         {menuOpen && (
           <div className="top-search-panel">
             <h2>Search & Filters</h2>
-            <p>[Search bar here]</p>
-            <p>[Tag checkboxes here]</p>
+            <input
+              type="text"
+              value={searchQuery}
+              onChange={(e) => setSearchQuery(e.target.value)}
+              placeholder="Search servers or #tags"
+            />
+
+            {suggestedTags.length > 0 && (
+              <div className="autocomplete-suggestions">
+                {suggestedTags.map((tag, index) => (
+                  <div
+                    key={index}
+                    className="suggestion"
+                    onClick={() => setSearchQuery(`#${tag}`)}
+                  >
+                    #{tag}
+                  </div>
+                ))}
+              </div>
+            )}
           </div>
         )}
       </div>
@@ -100,10 +181,10 @@ export default function App() {
         </div>
 
         <div className="grid-container">
-          {servers.length === 0 ? (
-            <p className="empty-message">Server API is loading...</p>
+          {filteredServers.length === 0 ? (
+            <p className="empty-message">No servers match your search.</p>
           ) : (
-            servers.map((server) => {
+            filteredServers.map((server) => {
               const displayName = server.name || server.invite_code;
               const isInvalid = !server.name;
               const tagList = server.tags?.split(",").map((tag) => tag.trim()) || [];
@@ -149,7 +230,8 @@ export default function App() {
                       <div
                         className="server-description ellipsis"
                         data-full={server.description}
-                        title={server.description}>
+                        title={server.description}
+                      >
                         {server.description}
                       </div>
                     )}

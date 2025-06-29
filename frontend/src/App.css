@@ -427,3 +427,23 @@
   margin-left: 0.5rem;
   vertical-align: middle;
 }
+
+.autocomplete-suggestions {
+  background: white;
+  border: 1px solid #ddd;
+  border-radius: 0.25rem;
+  margin-top: 0.5rem;
+  padding: 0.5rem;
+  max-height: 200px;
+  overflow-y: auto;
+  box-shadow: 0 4px 10px rgba(0,0,0,0.1);
+}
+
+.suggestion {
+  padding: 0.25rem 0.5rem;
+  cursor: pointer;
+}
+
+.suggestion:hover {
+  background-color: #f0f0f0;
+}
