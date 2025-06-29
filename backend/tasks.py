@@ -63,6 +63,10 @@ def update_all_servers():
         # Rate limit: sleep every 1/20 sec (20/sec = 50ms)
         time.sleep(0.05)
 
+        #print("Updated server:", server.banner_url)
         # Optional: log every 25
         if i % 25 == 0:
             print(f"Updated {i}/{len(servers)} servers")
+    
+    db.commit()
+    db.close()

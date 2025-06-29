@@ -7,58 +7,74 @@ const API_URL = process.env.REACT_APP_API_URL;
 export default function App() {
   const [servers, setServers] = useState([]);
   const [menuOpen, setMenuOpen] = useState(false);
+  const [isMobile, setIsMobile] = useState(window.innerWidth <= 768);
 
   useEffect(() => {
-    fetch(`${API_URL}/servers`)
-      .then((res) => res.json())
-      .then(async (data) => {
-        const enriched = await Promise.all(
-          data.map(async (server) => {
-            if (server.name && server.member_count !== null) return server;
-
-            try {
-              const res = await fetch(
-                `https://discord.com/api/invites/${server.invite_code}?with_counts=true`
-              );
-              if (!res.ok) throw new Error();
-              const json = await res.json();
-              const guild = json.guild || {};
-              const profile = json.profile || {};
-              const guild_id = guild.id;
-
-              const buildImageUrl = (hash, id, type) => {
-                if (!hash || !id) return null;
-                const ext = hash.startsWith("a_") ? "gif" : "webp";
-                if (type === "icon")
-                  return `https://cdn.discordapp.com/icons/${id}/${hash}.${ext}`;
-                if (type === "banner")
-                  return `https://cdn.discordapp.com/banners/${id}/${hash}.${ext}?size=512`;
-                return null;
-              };
-
-              return {
-                ...server,
-                name: guild.name || server.invite_code,
-                description: guild.description,
-                member_count: json.approximate_member_count,
-                custom_tag: profile.tag,
-                boost_tier: guild.premium_tier,
-                icon_url: buildImageUrl(guild.icon, guild_id, "icon"),
-                banner_url: buildImageUrl(guild.banner, guild_id, "banner"),
-              };
-            } catch {
-              return server;
-            }
-          })
-        );
-
-        setServers(enriched);
-      })
-      .catch((err) => console.error("Failed to fetch servers:", err));
+    const handleResize = () => setIsMobile(window.innerWidth <= 768);
+    window.addEventListener("resize", handleResize);
+    return () => window.removeEventListener("resize", handleResize);
   }, []);
 
+  useEffect(() => {
+  const fetchData = async () => {
+    try {
+      const res = await fetch(`${API_URL}/servers`);
+      const data = await res.json();
+
+      const enriched = await Promise.all(
+        data.map(async (server) => {
+          if (server.name && server.member_count !== null) return server;
+
+          try {
+            const res = await fetch(
+              `https://discord.com/api/invites/${server.invite_code}?with_counts=true`
+            );
+            if (!res.ok) throw new Error();
+            const json = await res.json();
+            const guild = json.guild || {};
+            const profile = json.profile || {};
+            const guild_id = guild.id;
+
+            const buildImageUrl = (hash, id, type) => {
+              if (!hash || !id) return null;
+              const ext = hash.startsWith("a_") ? "gif" : "webp";
+              if (type === "icon")
+                return `https://cdn.discordapp.com/icons/${id}/${hash}.${ext}`;
+              if (type === "banner")
+                return `https://cdn.discordapp.com/banners/${id}/${hash}.${ext}?size=512`;
+              return null;
+            };
+
+            return {
+              ...server,
+              name: guild.name || server.invite_code,
+              description: guild.description,
+              member_count: json.approximate_member_count,
+              custom_tag: profile.tag,
+              boost_tier: guild.premium_tier,
+              icon_url: buildImageUrl(guild.icon, guild_id, "icon"),
+              banner_url: buildImageUrl(guild.banner, guild_id, "banner"),
+            };
+          } catch {
+            return server;
+          }
+        })
+      );
+
+      setServers(enriched);
+    } catch (err) {
+      console.error("Failed to fetch servers:", err);
+    }
+  };
+
+  fetchData(); // initial fetch
+  const interval = setInterval(fetchData, 600000); // refetch every 10m
+  return () => clearInterval(interval); // cleanup on unmount
+}, []);
+
+
   return (
-    <div className={`app-container ${menuOpen ? "menu-open" : ""}`}>
+    <div className={`app-container ${menuOpen ? "menu-open" : ""} ${isMobile ? "mobile" : ""}`}>
       <div className="sidebar">
         <div className="search-toggle" onClick={() => setMenuOpen(!menuOpen)}>
           🔍
@@ -85,7 +101,7 @@ export default function App() {
 
         <div className="grid-container">
           {servers.length === 0 ? (
-            <p className="empty-message">Server API is</p>
+            <p className="empty-message">Server API is loading...</p>
           ) : (
             servers.map((server) => {
               const displayName = server.name || server.invite_code;

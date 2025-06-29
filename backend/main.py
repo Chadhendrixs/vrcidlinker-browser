@@ -19,7 +19,7 @@ def verify_api_key(request: Request):
         raise HTTPException(status_code=403, detail="Forbidden")
 
 scheduler = BackgroundScheduler()
-scheduler.add_job(update_all_servers, 'interval', hours=1)
+scheduler.add_job(update_all_servers, 'interval', hours=1)#seconds=10
 scheduler.start()
 
 app = FastAPI()
