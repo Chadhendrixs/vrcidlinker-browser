@@ -8,8 +8,7 @@ import requests
 import os
 from tasks import update_all_servers, build_discord_image_url, ensure_flags_exist
 from apscheduler.schedulers.background import BackgroundScheduler
-
-ensure_flags_exist()
+import uvicorn
 
 load_dotenv()
 
@@ -117,8 +116,16 @@ def publish_server(invite_code: str, tags: str, request: Request):
     finally:
         db.close()
 
-@app.on_event("startup")
-def startup_event():
+#@app.on_event("startup")
+#def startup_event():
     #ensure_flags_exist()
     #print("Flags ran!")
-    update_all_servers()
+    #update_all_servers()
+
+@app.get("/")
+def read_root():
+    return {"message": "Hello from FastAPI!"}
+
+if __name__ == "__main__":
+    port = int(os.environ.get("PORT", 8000))
+    uvicorn.run("main:app", host="0.0.0.0", port=port)
