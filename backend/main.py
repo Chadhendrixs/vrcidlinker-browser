@@ -6,8 +6,10 @@ from dotenv import load_dotenv
 from database import Base
 import requests
 import os
-from tasks import update_all_servers, build_discord_image_url
+from tasks import update_all_servers, build_discord_image_url, ensure_flags_exist
 from apscheduler.schedulers.background import BackgroundScheduler
+
+ensure_flags_exist()
 
 load_dotenv()
 
@@ -94,7 +96,7 @@ def publish_server(invite_code: str, tags: str, request: Request):
         guild = json.get("guild", {})
         profile = json.get("profile", {})
         guild_id = guild.get("id")
-
+        
         server.name = guild.get("name")
         server.description = guild.get("description")
         server.member_count = json.get("approximate_member_count")
@@ -114,3 +116,9 @@ def publish_server(invite_code: str, tags: str, request: Request):
 
     finally:
         db.close()
+
+@app.on_event("startup")
+def startup_event():
+    #ensure_flags_exist()
+    #print("Flags ran!")
+    update_all_servers()

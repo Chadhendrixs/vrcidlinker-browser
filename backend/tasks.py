@@ -2,6 +2,25 @@ import requests
 from database import SessionLocal
 from models import Server
 import time
+from sqlalchemy import text
+from database import engine
+
+def ensure_flags_exist():
+    # crossverify
+    try:
+        with engine.begin() as conn:
+            conn.execute(text("ALTER TABLE servers ADD COLUMN crossverify BOOLEAN DEFAULT true"))
+    except Exception as e:
+        if 'already exists' not in str(e):
+            print("Error adding crossverify:", e)
+
+    # promoted
+    try:
+        with engine.begin() as conn:
+            conn.execute(text("ALTER TABLE servers ADD COLUMN promoted BOOLEAN DEFAULT false"))
+    except Exception as e:
+        if 'already exists' not in str(e):
+            print("Error adding promoted:", e)
 
 def build_discord_image_url(hash_str, guild_id, type_):
     if not hash_str or not guild_id:

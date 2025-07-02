@@ -11,6 +11,12 @@ export default function App() {
   const [searchQuery, setSearchQuery] = useState("");
   const [allTags, setAllTags] = useState([]);
   const [suggestedTags, setSuggestedTags] = useState([]);
+  const [topTags, setTopTags] = useState([]);
+  const [memberFilter, setMemberFilter] = useState("");
+  const [filterType, setFilterType] = useState("more");
+
+
+
 
 
   useEffect(() => {
@@ -66,7 +72,7 @@ export default function App() {
         );
 
         setServers(enriched);
-
+        /*
         const allTags = Array.from(
           new Set(
             enriched.flatMap((s) =>
@@ -75,7 +81,7 @@ export default function App() {
           )
         );
         setAllTags(allTags);
-
+        */
       } catch (err) {
         console.error("Failed to fetch servers:", err);
         }
@@ -83,6 +89,24 @@ export default function App() {
   
       fetchData();
     }, []);
+  
+  useEffect(() => {
+    const allTagsList = servers.flatMap((s) =>
+      (s.tags || "").split(",").map((t) => t.trim().toLowerCase())
+    );
+    const tagCount = {};
+    allTagsList.forEach((tag) => {
+      if (tag) tagCount[tag] = (tagCount[tag] || 0) + 1;
+    });
+
+    const sorted = Object.entries(tagCount)
+      .sort((a, b) => b[1] - a[1])
+      .map(([tag]) => tag)
+      .slice(0, 10);
+
+    setTopTags(sorted);
+    setAllTags([...new Set(allTagsList)]);
+  }, [servers]);
 
 
   useEffect(() => {
@@ -115,6 +139,13 @@ export default function App() {
     const tags = (server.tags || "").toLowerCase();
     const name = (server.name || "").toLowerCase();
     const desc = (server.description || "").toLowerCase();
+    const count = server.member_count || 0;
+    
+    if (memberFilter) {
+      const parsed = parseInt(memberFilter);
+      if (filterType === "more" && count < parsed) return false;
+      if (filterType === "less" && count > parsed) return false;
+    }
 
     if (query.includes("#")) {
       const tagChunks = query
@@ -134,8 +165,6 @@ export default function App() {
     );
   });
 
-
-
   return (
     <div className={`app-container ${menuOpen ? "menu-open" : ""} ${isMobile ? "mobile" : ""}`}>
       <div className="sidebar">
@@ -145,12 +174,30 @@ export default function App() {
         {menuOpen && (
           <div className="top-search-panel">
             <h2>Search & Filters</h2>
-            <input
-              type="text"
-              value={searchQuery}
-              onChange={(e) => setSearchQuery(e.target.value)}
-              placeholder="Search servers or #tags"
-            />
+            <div style={{ display: "flex", gap: "0.5rem", alignItems: "center" }}>
+              <div className="search-bar-wrapper">
+                <input
+                  type="text"
+                  value={searchQuery}
+                  onChange={(e) => setSearchQuery(e.target.value)}
+                  placeholder="Search servers or #tags"
+                  className="search-input"
+                />
+                                
+                {searchQuery && (
+                  <>
+                    <div className="input-divider" />
+                    <button
+                      className="reset-button"
+                      onClick={() => setSearchQuery("")}
+                      title="Clear search"
+                    >
+                      ✕
+                    </button>
+                  </>
+                )}
+              </div>
+            </div>
 
             {suggestedTags.length > 0 && (
               <div className="autocomplete-suggestions">
@@ -158,16 +205,80 @@ export default function App() {
                   <div
                     key={index}
                     className="suggestion"
-                    onClick={() => setSearchQuery(`#${tag}`)}
+                    onClick={() => {
+                      const parts = searchQuery.split(",");
+                      parts[parts.length - 1] = ` #${tag}`;
+                      const updated = parts.join(",").replace(/^,/, "").trim();
+                      setSearchQuery(updated);
+                    }}
                   >
                     #{tag}
                   </div>
                 ))}
               </div>
             )}
+
+            {topTags.length > 0 && (
+              <div className="top-tags">
+                <br></br>
+                <p>Popular Tags:</p>
+                <div className="tag-list">
+                  {topTags.map((tag, index) => (
+                    <span
+                      key={index}
+                      className="tag"
+                      onClick={() => {
+                        const current = searchQuery.trim();
+                        const needsComma = current && !current.endsWith(",");
+                        const prefix = needsComma ? `${current}, ` : current;
+                        setSearchQuery(`${prefix}#${tag}`);
+                      }}
+                    >
+                      #{tag}
+                    </span>
+                  ))}
+                </div>
+              </div>
+            )}
+            <div className="member-filter-panel">
+              <p>Member Count:</p>
+              <div className="member-filter-controls">
+                <div className="member-input-wrapper">
+                  <input
+                    type="number"
+                    value={memberFilter}
+                    onChange={(e) => setMemberFilter(e.target.value)}
+                    placeholder="Filter by member count"
+                    className="search-input"
+                  />
+                
+                  {memberFilter && (
+                    <>
+                      <div className="input-divider" />
+                      <button
+                        className="reset-button"
+                        onClick={() => setMemberFilter("")}
+                        title="Clear member count filter"
+                      >
+                        ✕
+                      </button>
+                    </>
+                  )}
+                </div>
+              </div>
+              <button
+                className="toggle-filter"
+                onClick={() =>
+                  setFilterType((prev) => (prev === "more" ? "less" : "more"))
+                }
+              >
+                {filterType === "more" ? "More than" : "Less than"}
+              </button>
+            </div>
           </div>
         )}
       </div>
+
 
       <div className="content">
         <div className="video-banner">

@@ -1,4 +1,4 @@
-from sqlalchemy import Column, Integer, String
+from sqlalchemy import Column, Integer, String, Boolean
 from database import Base
 
 class Server(Base):
@@ -7,6 +7,8 @@ class Server(Base):
     id = Column(Integer, primary_key=True, index=True)
     invite_code = Column(String, unique=True, index=True)
     tags = Column(String)
+    crossverify = Column(Boolean, default=True)
+    promoted = Column(Boolean, default=False)
 
     name = Column(String, nullable=True)
     description = Column(String, nullable=True)

@@ -370,7 +370,6 @@
   flex-wrap: nowrap;
 }
 
-
 .member-count {
   font-weight: 500;
   white-space: nowrap;
@@ -446,4 +445,193 @@
 
 .suggestion:hover {
   background-color: #f0f0f0;
+}
+
+.top-search-panel input[type="text"] {
+  width: 100%;
+  padding: 0.55rem 0.75rem;
+  margin-bottom: 0.75rem;
+  outline: none;
+  transition: border-color 0.2s ease;
+}
+
+.top-search-panel input[type="text"]:focus {
+  border-color: #3b82f6;
+  box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.2);
+}
+
+.top-tags {
+  margin-top: 0.25rem;
+}
+
+.top-tags p {
+  margin: 0 0 0.25rem;
+  font-size: 0.9rem;
+  font-weight: 600;
+  color: #111827;
+}
+
+.top-tags .tag-list {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.35rem;
+}
+
+.top-tags .tag {
+  display: inline-block;
+  background: #e0f2fe;
+  color: #0369a1;
+  padding: 0.35rem 0.65rem;
+  border-radius: 9999px;
+  font-size: 0.75rem;
+  font-weight: 500;
+  cursor: pointer;
+  transition: background 0.2s ease;
+}
+
+.top-tags .tag:hover {
+  background: #bae6fd;
+}
+
+.search-bar-wrapper {
+  display: flex;
+  align-items: center;
+  width: 90%;
+  max-width: 280px;
+  border: 1px solid #ccc;
+  border-radius: 8px;
+  overflow: hidden;
+  background: white;
+  height: 40px;
+}
+
+.search-input {
+  flex: 1;
+  padding: 0 0.75rem;
+  border: none;
+  font-size: 1rem;
+  outline: none;
+  background: transparent;
+  height: 100%;
+  box-sizing: border-box;
+  margin-top: 0.75rem;
+}
+
+.search-input:focus {
+  border-color: #3b82f6;
+  box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.2);
+}
+
+.reset-button {
+  border: none;
+  background: none;
+  padding: 0 0.75rem;
+  font-size: 1.25rem;
+  cursor: pointer;
+  color: #858585;
+  height: 100%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin-bottom: 0.2rem;
+}
+
+.reset-button:hover {
+  color: #f33838;
+}
+
+.input-divider {
+  width: 1px;
+  height: 60%;
+  background-color: #ccc;
+}
+
+.member-filter-panel p {
+  display: block; /* force label onto its own line */
+  margin: 0 0 0.25rem;
+  font-size: 0.9rem;
+  font-weight: 600;
+  color: #111827;
+}
+
+
+.member-filter-controls {
+  display: flex;
+  gap: 0.5rem;
+  margin-top: 0.25rem;
+  
+}
+
+.member-filter-controls input {
+  width: 80px;
+  padding: 0.25rem;
+  border: 1px solid #ccc;
+  border-radius: 8px;
+}
+
+.toggle-filter {
+  background-color: #e0e7ff;
+  border: none;
+  padding: 0.5rem 0.75rem;
+  border-radius: 0 8px 8px 0;
+  cursor: pointer;
+  height: 2.25rem;
+  margin-left: -1px;
+}
+
+.member-filter p {
+  margin: 0 0 0.25rem;
+  font-size: 0.9rem;
+  font-weight: 600;
+  color: #111827;
+}
+
+.member-input-wrapper {
+  display: flex;
+  align-items: center;
+  border: 1px solid #ccc;
+  border-radius: 20px 0 0 20px;
+  padding-right: 0rem;
+  width: 30%; /* shrunk from 85% */
+  height: 40px;
+  background: white;
+}
+
+.toggle-filter {
+  background-color: #e0e7ff;
+  border: none;
+  padding: 0.4rem 0.5rem;
+  border-radius: 0 20px 20px 0; /* only round the right corners */
+  cursor: pointer;
+  height: 42px;
+  margin-left: -0.5rem; /* pull it left to overlap the input border */
+}
+
+.member-input-wrapper .reset-button {
+  margin-left: -1.0rem;
+}
+
+.member-input-wrapper .input-divider {
+  margin-right: 0.7rem;
+}
+
+.member-input-wrapper input {
+  flex: 1;
+  border: none;
+  outline: none;
+  font-size: 0.95rem;
+  padding: 0;
+  margin: 0;
+  margin-left: 0.5rem;
+  height: 100%;
+  background: transparent;
+  width: 80%;
+}
+
+.member-filter-controls {
+  display: flex;
+  gap: 0.35rem; /* smaller gap between input and button */
+  margin-top: 0.25rem;
+  align-items: center;
+  margin-left: 0.2rem; /* pull everything closer to the label */
 }
