@@ -138,6 +138,20 @@
   .app-container {
     display: block !important;
   }
+
+  .video-overlay {
+    text-align: center;
+    align-items: center;
+    justify-content: center;
+  }
+
+  .banner-title,
+  .banner-subtitle {
+    text-align: center;
+    width: 100%;
+    padding: 0 1rem;
+  }
+
 }
 
 
@@ -293,7 +307,7 @@
   
   position: absolute;
   top: 35px; /* half of height to float */
-  left: 17%;
+  left: 75px;
   transform: translateX(-50%);
   background: white;
   z-index: 2;
@@ -590,9 +604,9 @@
   display: flex;
   align-items: center;
   border: 1px solid #ccc;
-  border-radius: 20px 0 0 20px;
+  border-radius: 20px 20px 20px 20px;
   padding-right: 0rem;
-  width: 30%; /* shrunk from 85% */
+  width: 70%; /* shrunk from 85% */
   height: 40px;
   background: white;
 }
@@ -634,4 +648,205 @@
   margin-top: 0.25rem;
   align-items: center;
   margin-left: 0.2rem; /* pull everything closer to the label */
+}
+
+.custom-tag-filter {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  margin-top: 1rem;
+}
+
+.switch {
+  position: relative;
+  display: inline-block;
+  width: 36px;
+  height: 20px;
+}
+
+.switch input {
+  opacity: 0;
+  width: 0;
+  height: 0;
+}
+
+.slider {
+  position: absolute;
+  cursor: pointer;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background-color: #ccc;
+  transition: 0.2s;
+  border-radius: 34px;
+}
+
+.slider:before {
+  position: absolute;
+  content: "";
+  height: 14px;
+  width: 14px;
+  left: 3px;
+  bottom: 3px;
+  background-color: white;
+  transition: 0.2s;
+  border-radius: 50%;
+}
+
+.switch input:checked + .slider {
+  background-color: #3b82f6;
+}
+
+.switch input:checked + .slider:before {
+  transform: translateX(16px);
+}
+
+.switch-label {
+  display: block; /* force label onto its own line */
+  margin: 0 0 0.25rem;
+  font-size: 0.9rem;
+  font-weight: 600;
+  color: #111827;
+}
+
+.server-icon-wrapper {
+  position: relative;
+  display: inline-block;
+}
+
+.custom-tag-wrapper {
+  position: absolute;
+  top: 10px;
+  right: 10px;
+  background-color: #3b82f6;
+  color: white;
+  padding: 0.15rem 0.3rem;
+  border-radius: 9999px;
+  font-size: 0.65rem;
+  font-weight: bold;
+  z-index: 2;
+  transition: right 0.2s ease;
+}
+
+.custom-tag-wrapper.shift-left {
+  right: 3.25rem; /* moved left to accommodate crossverify badge */
+}
+
+.custom-tag-label {
+  background-color: #3b82f6;
+  color: white;
+  font-size: 0.7rem;
+  font-weight: 600;
+  padding: 0.3rem 0.6rem;
+  border-radius: 9999px;
+  cursor: default;
+  display: inline-block;
+}
+
+.custom-tag-wrapper:hover .custom-tag-tooltip {
+  opacity: 1;
+  visibility: visible;
+}
+
+.custom-tag-tooltip {
+  position: absolute;
+  bottom: 120%;
+  right: 0;
+  transform: translateY(-10px);
+  background: white;
+  color: #111827;
+  border: 1px solid #ccc;
+  border-radius: 0.5rem;
+  padding: 0.4rem 0.6rem;
+  font-size: 1rem;
+  white-space: normal;
+  width: 250px;
+  z-index: 100;
+  opacity: 0;
+  visibility: hidden;
+  transition: opacity 0.2s ease;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+}
+
+.custom-tag-badge:hover .custom-tag-tooltip {
+  display: block;
+}
+/* */
+.cross-verify-wrapper {
+  position: absolute;
+  top: 10px;
+  right: 10px;
+  background-color: #3b82f6;
+  color: white;
+  padding: 0.15rem 0.5rem;
+  border-radius: 9999px;
+  font-size: 0.65rem;
+  font-weight: bold;
+  z-index: 2;
+  transition: right 0.2s ease;
+}
+
+.cross-verify-label {
+  background-color: #3b82f6;
+  color: white;
+  font-size: 0.7rem;
+  font-weight: 600;
+  padding: 0.3rem 0.3rem;
+  border-radius: 9999px;
+  cursor: default;
+  display: inline-block;
+}
+
+.cross-verify-wrapper:hover .cross-verify-tooltip {
+  opacity: 1;
+  visibility: visible;
+}
+
+.cross-verify-tooltip {
+  position: absolute;
+  bottom: 120%;
+  right: 0;
+  transform: translateY(-10px);
+  background: white;
+  color: #111827;
+  border: 1px solid #ccc;
+  border-radius: 0.5rem;
+  padding: 0.4rem 0.6rem;
+  font-size: 1rem;
+  white-space: wrap;
+  width: 250px;
+  z-index: 100;
+  opacity: 0;
+  visibility: hidden;
+  transition: opacity 0.2s ease;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+}
+
+.cross-verify-badge:hover .cross-verify-tooltip {
+  display: block;
+}
+
+.banner-title {
+  color: white;
+  font-size: 3rem;
+  font-weight: bold;
+  margin-bottom: 0.5rem;
+  text-shadow: 0 1px 3px rgba(0, 0, 0, 0.6);
+}
+
+.banner-subtitle {
+  color: white;
+  font-size: 1.25rem;
+  margin-bottom: 0.25rem;
+  text-shadow: 0 1px 2px rgba(0, 0, 0, 0.5);
+}
+
+.banner-subtitle a {
+  color: #93c5fd;
+  text-decoration: underline;
+}
+
+.banner-subtitle a:hover {
+  color: #bfdbfe;
 }

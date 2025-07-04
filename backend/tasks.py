@@ -4,6 +4,10 @@ from models import Server
 import time
 from sqlalchemy import text
 from database import engine
+import json
+from pathlib import Path
+
+STATS_PATH = Path("server_stats.json")
 
 def ensure_flags_exist():
     # crossverify
@@ -89,3 +93,13 @@ def update_all_servers():
     
     db.commit()
     db.close()
+
+def save_stats(stats):
+    with STATS_PATH.open("w") as f:
+        json.dump(stats, f)
+
+def load_stats():
+    if STATS_PATH.exists():
+        with STATS_PATH.open("r") as f:
+            return json.load(f)
+    return {"server_count": 0, "verified_users": 0}

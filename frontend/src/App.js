@@ -14,9 +14,10 @@ export default function App() {
   const [topTags, setTopTags] = useState([]);
   const [memberFilter, setMemberFilter] = useState("");
   const [filterType, setFilterType] = useState("more");
-
-
-
+  const [customTagOnly, setCustomTagOnly] = useState(false);
+  const [crossVerifyOnly, setCrossVerifyOnly] = useState(false);
+  const [serverCount, setServerCount] = useState(0);
+  const [verifiedUserCount, setVerifiedUserCount] = useState(0);
 
 
   useEffect(() => {
@@ -61,6 +62,7 @@ export default function App() {
                 description: guild.description,
                 member_count: json.approximate_member_count,
                 custom_tag: profile.tag,
+                crossverify: profile.crossverify || false,
                 boost_tier: guild.premium_tier,
                 icon_url: buildImageUrl(guild.icon, guild_id, "icon"),
                 banner_url: buildImageUrl(guild.banner, guild_id, "banner"),
@@ -134,6 +136,16 @@ export default function App() {
     }
   }, [searchQuery, allTags]);
 
+  useEffect(() => {
+    fetch(`${API_URL}/stats`)
+      .then(res => res.json())
+      .then(data => {
+        setServerCount(data.server_count);
+        setVerifiedUserCount(data.verified_users);
+      });
+  }, []);
+
+
   const filteredServers = servers.filter((server) => {
     const query = searchQuery.toLowerCase();
     const tags = (server.tags || "").toLowerCase();
@@ -157,6 +169,9 @@ export default function App() {
         tags.split(",").some((t) => t.trim().includes(tag))
       );
     }
+
+    if (customTagOnly && !server.custom_tag) return false;
+    if (crossVerifyOnly && !server.crossverify) return false;
 
     return (
       name.includes(query) ||
@@ -241,6 +256,7 @@ export default function App() {
               </div>
             )}
             <div className="member-filter-panel">
+              <br></br>
               <p>Member Count:</p>
               <div className="member-filter-controls">
                 <div className="member-input-wrapper">
@@ -264,16 +280,37 @@ export default function App() {
                       </button>
                     </>
                   )}
+                  <button
+                    className="toggle-filter"
+                    onClick={() =>
+                      setFilterType((prev) => (prev === "more" ? "less" : "more"))
+                    }>
+                    {filterType === "more" ? "More than" : "Less than"}
+                  </button>
                 </div>
               </div>
-              <button
-                className="toggle-filter"
-                onClick={() =>
-                  setFilterType((prev) => (prev === "more" ? "less" : "more"))
-                }
-              >
-                {filterType === "more" ? "More than" : "Less than"}
-              </button>
+              <div className="custom-tag-filter">
+                <span className="switch-label">Has a custom tag:</span>
+                <label className="switch">
+                  <input
+                    type="checkbox"
+                    checked={customTagOnly}
+                    onChange={(e) => setCustomTagOnly(e.target.checked)}
+                  />
+                  <span className="slider"></span>
+                </label>
+              </div>
+              <div className="custom-tag-filter">
+                <span className="switch-label">Cross verify enabled:</span>
+                <label className="switch">
+                  <input
+                    type="checkbox"
+                    checked={crossVerifyOnly}
+                    onChange={(e) => setCrossVerifyOnly(e.target.checked)}
+                  />
+                  <span className="slider"></span>
+                </label>
+              </div>
             </div>
           </div>
         )}
@@ -287,7 +324,16 @@ export default function App() {
             Your browser does not support the video tag.
           </video>
           <div className="video-overlay">
-            <h1 className="banner-text">Server Directory</h1>
+            <h1 className="banner-title">VRC LINKED</h1>
+            <h4 className="banner-subtitle">
+              Servers protected and ID verified by{" "}
+              <a href="https://vrcidlinker.com" target="_blank" rel="noopener noreferrer">
+                VRC ID Linker
+              </a>
+            </h4>
+            <h4 className="banner-subtitle">
+              {serverCount.toLocaleString()} servers protected, {verifiedUserCount.toLocaleString()} users verified.
+            </h4>
           </div>
         </div>
 
@@ -314,6 +360,30 @@ export default function App() {
                     backgroundPosition: "center",
                   }}
                 >
+                  {server.custom_tag && (
+                    <>
+                    <div className={`custom-tag-wrapper ${server.crossverify ? "shift-left" : ""}`}>
+                      <span className="custom-tag-label">
+                        {server.custom_tag.toUpperCase()}
+                      </span>
+                      <span className="custom-tag-tooltip">
+                        This server has a custom tag! This can be displayed on your discord profile if you wish.
+                      </span>
+                    </div>
+                    </>
+                  )}
+                  {server.crossverify && (
+                    <>
+                    <div className="cross-verify-wrapper">
+                      <span className="cross-verify-label">
+                        ⇄
+                      </span>
+                      <span className="cross-verify-tooltip">
+                        This server has cross verification enabled! If you're already verified with the bot, you will be automatically verified here.
+                      </span>
+                    </div>
+                    </>
+                  )}
                   <div className="card-content">
                     {server.icon_url && (
                       <img
