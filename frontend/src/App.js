@@ -693,12 +693,13 @@ export default function App() {
                       </span>
                     )}
                     {server.description && (
-                      <div
-                        className="server-description ellipsis"
-                        data-full={server.description}
-                        title={server.description}
-                      >
-                        {server.description}
+                      <div className="server-description-wrapper">
+                        <div className="server-description ellipsis">
+                          {server.description}
+                        </div>
+                        <div className="server-description-tooltip">
+                          {server.description}
+                        </div>
                       </div>
                     )}
                     <div className="member-and-tags">
