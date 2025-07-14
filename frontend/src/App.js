@@ -345,40 +345,49 @@ export default function App() {
 
       {/* --- SIDEBAR (mobile only) --- */}
       {isMobile && (
-        <div className="sidebar">
-          <div className="mobile-header-content">
-            <div
-              className="search-toggle"
-              onClick={() => setMenuOpen(!menuOpen)}
-              title="Open search"
-            >
-              🔍
+        <>
+          {/* HEADER BAR */}
+          <div className="sidebar">
+            <div className="mobile-header-content">
+              <div
+                className="search-toggle"
+                onClick={() => setMenuOpen(!menuOpen)}
+                title="Open search"
+              >
+                🔍
+              </div>
+              <div className="mobile-header-title">VRC LINKED</div>
             </div>
-            <div className="mobile-header-title">VRC LINKED</div>
           </div>
+
+          {/* OVERLAY BACKDROP */}
           {menuOpen && (
-            <div className="top-search-panel">
-              <h2>Search & Filters</h2>
-              <div style={{ display: "flex", gap: "0.5rem", alignItems: "center" }}>
-                <div className="search-bar-wrapper">
-                  <input
-                    type="text"
-                    value={searchQuery}
-                    onChange={(e) => setSearchQuery(e.target.value)}
-                    placeholder="Search servers or #tags"
-                    className="search-input"
-                  />
-                                  
-                  {searchQuery && (
-                    <>
-                      <div className="input-divider" />
-                      <button
-                        className="reset-button"
-                        onClick={() => setSearchQuery("")}
-                        title="Clear search"
-                      >
-                        ✕
-                      </button>
+            <div className="overlay-bg" onClick={() => setMenuOpen(false)} />
+          )}
+
+          {/* SEARCH PANEL */}
+          <div className={`top-search-panel ${menuOpen ? "open" : ""}`}>
+            <h2>Search & Filters</h2>
+            <div style={{ display: "flex", gap: "0.5rem", alignItems: "center" }}>
+              <div className="search-bar-wrapper">
+                <input
+                  type="text"
+                  value={searchQuery}
+                  onChange={(e) => setSearchQuery(e.target.value)}
+                  placeholder="Search servers or #tags"
+                  className="search-input"
+                />
+
+                {searchQuery && (
+                  <>
+                    <div className="input-divider" />
+                    <button
+                      className="reset-button"
+                      onClick={() => setSearchQuery("")}
+                      title="Clear search"
+                    >
+                      ✕
+                    </button>
                     </>
                   )}
                 </div>
@@ -483,8 +492,7 @@ export default function App() {
                 </div>
               </div>
             </div>
-          )}
-        </div>
+        </>
       )}
 
 
@@ -576,12 +584,13 @@ export default function App() {
                             </span>
                           )}
                           {server.description && (
-                            <div
-                              className="server-description ellipsis"
-                              data-full={server.description}
-                              title={server.description}
-                            >
-                              {server.description}
+                            <div className="server-description-wrapper">
+                              <div className="server-description ellipsis">
+                                {server.description}
+                              </div>
+                              <div className="server-description-tooltip">
+                                {server.description}
+                              </div>
                             </div>
                           )}
                           <div className="member-and-tags">
