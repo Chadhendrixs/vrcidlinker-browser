@@ -12,6 +12,8 @@ body {
   grid-template-columns: 1fr !important;
   justify-items: center !important;
   padding: 0 !important;
+  overflow: visible !important;
+  position: relative !important;
   }
 
 
@@ -21,6 +23,8 @@ body {
     margin: 0 auto !important;
     height: auto !important;
     box-sizing: border-box !important;
+    position: relative !important;
+    overflow: visible !important;
   }
 
 
@@ -32,7 +36,6 @@ body {
     transform: none !important;
     z-index: 2;
   }
-
   .server-name {
     font-size: 1rem; /* smaller font */
     font-weight: 700;
@@ -230,49 +233,29 @@ body {
   }
 
   .server-description-tooltip {
-    visibility: hidden;
+    position: fixed;
+    z-index: 9999;
     background: white;
     color: #111;
     padding: 0.75rem;
     border-radius: 0.5rem;
     box-shadow: 0 4px 14px rgba(0, 0, 0, 0.15);
-    position: absolute;
-    top: 100%; /* Move above */
-    left: 50%;
-    transform: translateX(-50%);
-    width: max-content;
     max-width: 90vw;
-    z-index: 999;
+    width: auto;
     white-space: normal;
     text-align: left;
     line-height: 1.3;
-    opacity: 0;
-    transition: opacity 0.3s ease;
-    pointer-events: none;
+    font-size: 1rem;
+    transform: translate(-50%, -50%);
+    pointer-events: none; /* prevent mobile double click weirdness */
   }
 
 
   .server-description-wrapper:hover .server-description-tooltip {
     visibility: visible;
     opacity: 1;
+    position: absolute !important;
   }
-
-
-  .server-description-tooltip {
-    left: 50% !important;
-    transform: translateX(-50%) !important;
-    min-width: 0 !important;
-    max-width: 95vw !important;
-    width: 95vw !important;
-    box-sizing: border-box;
-    top: 110% !important;
-    margin-left: 0 !important;
-    font-size: 0.95rem;
-    padding: 0.75rem 1rem;
-    word-break: break-word;
-  }
-
-
 }
 
 
@@ -405,7 +388,6 @@ body {
     rgba(255, 255, 255, 0.2) 80%,
     rgba(255, 255, 255, 0) 100%
   );
-  z-index: 0;
   border-radius: inherit;
 }
 
@@ -416,7 +398,6 @@ body {
 
 .card-content {
   position: relative;
-  z-index: 1;
   padding: 1.5rem 1.5rem 1rem 1.5rem;
   display: flex;
   flex-direction: column;
@@ -1346,6 +1327,7 @@ body {
   text-align: left;
   line-height: 1.3;
   font-size: 1rem;
+  transform: translate(-50%, -50%);
 }
 
 .server-description-wrapper:hover .server-description-tooltip,

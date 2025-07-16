@@ -1,6 +1,7 @@
 import React, { useEffect, useState } from "react";
 import { Link } from "react-router-dom";
 import "./App.css";
+import TooltipPortal from "./TooltipPortal";
 
 const API_URL = process.env.REACT_APP_API_URL;
 
@@ -18,6 +19,12 @@ export default function App() {
   const [crossVerifyOnly, setCrossVerifyOnly] = useState(false);
   const [serverCount, setServerCount] = useState(0);
   const [verifiedUserCount, setVerifiedUserCount] = useState(0);
+  const [hoveredTooltip, setHoveredTooltip] = useState(null);
+  const [mouseX, setMouseX] = useState(0);
+  const [mouseY, setMouseY] = useState(0);
+  const [selectedPromotedServers, setSelectedPromotedServers] = useState([]);
+
+
 
 
   useEffect(() => {
@@ -180,12 +187,42 @@ export default function App() {
     );
   });
 
-  const promotedServers = [..._filtered.filter(s => s.promoted)]
-    .sort(() => 0.5 - Math.random())
-    .slice(0, 3);
+  useEffect(() => {
+    const promos = servers.filter(s => s.promoted);
+    const selected = [...promos].sort(() => 0.5 - Math.random()).slice(0, 3);
+    setSelectedPromotedServers(selected);
+  }, [servers]);
 
-  const filteredServers = _filtered.filter(s => !promotedServers.includes(s));
+  const filteredServers = _filtered.filter(s => !selectedPromotedServers.includes(s));
+  
+  useEffect(() => {
+    if (!hoveredTooltip) return;
 
+    const handleScroll = () => setHoveredTooltip(null);
+
+    const handleClickOutside = (e) => {
+      const tooltip = document.querySelector(".server-description-tooltip");
+      const wrappers = document.querySelectorAll(".server-description-wrapper");
+
+      const clickedInsideWrapper = Array.from(wrappers).some(wrapper =>
+        wrapper.contains(e.target)
+      );
+
+      const clickedInsideTooltip = tooltip && tooltip.contains(e.target);
+
+      if (!clickedInsideWrapper && !clickedInsideTooltip) {
+        setHoveredTooltip(null);
+      }
+    };
+
+    window.addEventListener("scroll", handleScroll, { passive: true });
+    document.addEventListener("click", handleClickOutside);
+
+    return () => {
+      window.removeEventListener("scroll", handleScroll);
+      document.removeEventListener("click", handleClickOutside);
+    };
+  }, [hoveredTooltip]);
 
   return (
     <div className={`app-container ${menuOpen ? "menu-open" : ""} ${isMobile ? "mobile" : ""}`}>
@@ -517,13 +554,13 @@ export default function App() {
           </div>
         </div>
 
-        {promotedServers.length > 0 && (
+        {selectedPromotedServers.length > 0 && (
           <div className="promoted-section">
             <div className="promoted-block">
               <div className="promoted-container">
                 <h2 className="promoted-title">⭐ Promoted Servers</h2>
                 <div className="grid-container promoted-grid">
-                  {promotedServers.map((server) => {
+                  {selectedPromotedServers.map((server) => {
                     const displayName = server.name || server.invite_code;
                     const isInvalid = !server.name;
                     const tagList = server.tags?.split(",").map((tag) => tag.trim()) || [];
@@ -584,11 +621,24 @@ export default function App() {
                             </span>
                           )}
                           {server.description && (
-                            <div className="server-description-wrapper">
+                            <div
+                              className="server-description-wrapper"
+                              onClick={(e) => {
+                                const alreadyOpen = hoveredTooltip === server.id;
+                                const rect = e.currentTarget.getBoundingClientRect();
+                                const centerX = rect.left + rect.width / 2;
+                                const centerY = rect.top + rect.height / 2;
+
+                                if (alreadyOpen) {
+                                  setHoveredTooltip(null);
+                                } else {
+                                  setHoveredTooltip(server.id);
+                                  setMouseX(centerX);
+                                  setMouseY(centerY);
+                                }
+                              }}
+                            >
                               <div className="server-description ellipsis">
-                                {server.description}
-                              </div>
-                              <div className="server-description-tooltip">
                                 {server.description}
                               </div>
                             </div>
@@ -693,11 +743,24 @@ export default function App() {
                       </span>
                     )}
                     {server.description && (
-                      <div className="server-description-wrapper">
+                      <div
+                        className="server-description-wrapper"
+                        onClick={(e) => {
+                          const alreadyOpen = hoveredTooltip === server.id;
+                          const rect = e.currentTarget.getBoundingClientRect();
+                          const centerX = rect.left + rect.width / 2;
+                          const centerY = rect.top + rect.height / 2;
+
+                          if (alreadyOpen) {
+                            setHoveredTooltip(null);
+                          } else {
+                            setHoveredTooltip(server.id);
+                            setMouseX(centerX);
+                            setMouseY(centerY);
+                          }
+                        }}
+                      >
                         <div className="server-description ellipsis">
-                          {server.description}
-                        </div>
-                        <div className="server-description-tooltip">
                           {server.description}
                         </div>
                       </div>
@@ -727,6 +790,26 @@ export default function App() {
             })
           )}
         </div>
+        {hoveredTooltip && (
+          <TooltipPortal>
+            <div
+              className="server-description-tooltip"
+              style={{
+                position: "fixed",
+                top: `${mouseY}px`,
+                left: `${mouseX}px`,
+                zIndex: 9999,
+                display: "block",
+              }}
+            >
+              {
+                [...selectedPromotedServers, ...filteredServers].find(
+                  (s) => s.id === hoveredTooltip
+                )?.description
+              }
+            </div>
+          </TooltipPortal>
+        )}
       </div>
     </div>
   );
