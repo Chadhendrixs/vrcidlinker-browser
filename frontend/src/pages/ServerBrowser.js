@@ -1,5 +1,6 @@
 import React, { useEffect, useState } from "react";
 import { Link } from "react-router-dom";
+import { useMemo } from "react";
 import "./ServerBrowser.css";
 import TooltipPortal from "../TooltipPortal";
 
@@ -153,45 +154,56 @@ export default function ServerBrowser() {
   }, []);
 
 
-  const _filtered = servers.filter((server) => {
+  const _filtered = useMemo(() => {
     const query = searchQuery.toLowerCase();
-    const tags = (server.tags || "").toLowerCase();
-    const name = (server.name || "").toLowerCase();
-    const desc = (server.description || "").toLowerCase();
-    const count = server.member_count || 0;
-    
-    if (memberFilter) {
-      const parsed = parseInt(memberFilter);
-      if (filterType === "more" && count < parsed) return false;
-      if (filterType === "less" && count > parsed) return false;
-    }
 
-    if (query.includes("#")) {
-      const tagChunks = query
-        .split(",")
-        .map((tag) => tag.trim().replace(/^#/, ""))
-        .filter(Boolean);
+    return servers.filter((server) => {
+      const tags = (server.tags || "").toLowerCase();
+      const name = (server.name || "").toLowerCase();
+      const desc = (server.description || "").toLowerCase();
+      const count = server.member_count || 0;
 
-      return tagChunks.every((tag) =>
-        tags.split(",").some((t) => t.trim().includes(tag))
+      if (memberFilter) {
+        const parsed = parseInt(memberFilter);
+        if (filterType === "more" && count < parsed) return false;
+        if (filterType === "less" && count > parsed) return false;
+      }
+
+      if (query.includes("#")) {
+        const tagChunks = query
+          .split(",")
+          .map((tag) => tag.trim().replace(/^#/, ""))
+          .filter(Boolean);
+
+        return tagChunks.every((tag) =>
+          tags.split(",").some((t) => t.trim().includes(tag))
+        );
+      }
+
+      if (customTagOnly && !server.custom_tag) return false;
+      if (crossVerifyOnly && !server.crossverify) return false;
+
+      return (
+        name.includes(query) ||
+        desc.includes(query) ||
+        tags.split(",").some((tag) => tag.trim().includes(query))
       );
-    }
-
-    if (customTagOnly && !server.custom_tag) return false;
-    if (crossVerifyOnly && !server.crossverify) return false;
-
-    return (
-      name.includes(query) ||
-      desc.includes(query) ||
-      tags.split(",").some((tag) => tag.trim().includes(query))
-    );
-  });
+    });
+  }, [
+    servers,
+    searchQuery,
+    memberFilter,
+    filterType,
+    customTagOnly,
+    crossVerifyOnly,
+  ]);
 
   useEffect(() => {
-    const promos = servers.filter(s => s.promoted);
+    const promos = _filtered.filter(s => s.promoted);
     const selected = [...promos].sort(() => 0.5 - Math.random()).slice(0, 3);
     setSelectedPromotedServers(selected);
-  }, [servers]);
+  }, [_filtered]);
+
 
   const filteredServers = _filtered.filter(s => !selectedPromotedServers.includes(s));
   
@@ -262,25 +274,30 @@ export default function ServerBrowser() {
                 ✖
               </button>
             </div>
-            <div className="search-panel-content">
-              <input
-                type="text"
-                value={searchQuery}
-                onChange={(e) => setSearchQuery(e.target.value)}
-                placeholder="Search servers or #tags"
-                className="desktop-search-input"
-                autoFocus
-              />
-              {searchQuery && (
-                <button
-                  className="reset-button"
-                  onClick={() => setSearchQuery("")}
-                  title="Clear search"
-                  style={{ marginLeft: 8 }}
-                >
-                  ✕
-                </button>
-              )}
+              <div className="search-panel-content">
+                <div className="search-bar-wrapper">
+                  <input
+                    type="text"
+                    value={searchQuery}
+                    onChange={(e) => setSearchQuery(e.target.value)}
+                    placeholder="Search servers or #tags"
+                    className="desktop-search-input"
+                    autoFocus
+                  />
+                  {searchQuery && (
+                    <>
+                    <div className="input-divider" />
+                    <button
+                      className="reset-button"
+                      onClick={() => setSearchQuery("")}
+                      title="Clear search"
+                      style={{ marginLeft: 8 }}
+                    >
+                      ✕
+                    </button>
+                    </>
+                  )}
+                </div>
               {suggestedTags.length > 0 && (
                 <div className="autocomplete-suggestions">
                   {suggestedTags.map((tag, index) => (
@@ -324,32 +341,35 @@ export default function ServerBrowser() {
                 <p>Member Count:</p>
                 <div className="member-filter-controls">
                   <div className="member-input-wrapper">
-                    <input
-                      type="number"
-                      value={memberFilter}
-                      onChange={(e) => setMemberFilter(e.target.value)}
-                      placeholder="e.g. 100"
-                      className="search-input"
-                    />
-                    {memberFilter && (
+                    <div className="input-group member-filter-input-group">
+                      <input
+                        type="number"
+                        value={memberFilter}
+                        onChange={(e) => setMemberFilter(e.target.value)}
+                        placeholder="e.g. 100"
+                        className="search-input"
+                      />
+                      {memberFilter && (
+                        <>
+                          <div className="input-divider" />
+                          <button
+                            className="reset-button"
+                            onClick={() => setMemberFilter("")}
+                            title="Clear member count"
+                          >
+                            ✕
+                          </button>
+                        </>
+                      )}
                       <button
-                        className="reset-button"
-                        onClick={() => setMemberFilter("")}
-                        title="Clear member count filter"
-                        style={{ marginLeft: 8 }}
+                        className="toggle-filter"
+                        onClick={() =>
+                          setFilterType((prev) => (prev === "more" ? "less" : "more"))
+                        }
                       >
-                        ✕
+                        {filterType === "more" ? "More than" : "Less than"}
                       </button>
-                    )}
-                    <button
-                      className="toggle-filter"
-                      onClick={() =>
-                        setFilterType((prev) => (prev === "more" ? "less" : "more"))
-                      }
-                      style={{ marginLeft: 8 }}
-                    >
-                      {filterType === "more" ? "More than" : "Less than"}
-                    </button>
+                    </div>
                   </div>
                 </div>
                 <div className="custom-tag-filter" style={{ marginTop: 40 }}>
@@ -480,7 +500,7 @@ export default function ServerBrowser() {
                       type="number"
                       value={memberFilter}
                       onChange={(e) => setMemberFilter(e.target.value)}
-                      placeholder="Filter by member count"
+                      placeholder="e.g. 100"
                       className="search-input"
                     />
                   
