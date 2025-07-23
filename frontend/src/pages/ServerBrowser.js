@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from "react";
 import { Link } from "react-router-dom";
 import { useMemo } from "react";
-import "./ServerBrowser.css";
+import "./css/ServerBrowser.css";
 import TooltipPortal from "../TooltipPortal";
 
 const API_URL = process.env.REACT_APP_API_URL;
@@ -556,7 +556,7 @@ export default function ServerBrowser() {
       {/* --- MAIN CONTENT --- */}
       <div className="content">
         <div className="video-banner">
-          <video autoPlay muted loop className="background-video">
+          <video autoPlay muted loop playsInline className="background-video">
             <source src="./filesize.mp4" type="video/mp4" />
             Your browser does not support the video tag.
           </video>

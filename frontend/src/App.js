@@ -5,7 +5,7 @@ import "./App.css";
 export default function App() {
   return (
     <div className="landing-wrapper">
-      <video autoPlay muted loop playsinline className="background-video">
+      <video autoPlay muted loop playsInline className="background-video">
         <source src="./filesize.mp4" type="video/mp4" />
         Your browser does not support the video tag.
       </video>
