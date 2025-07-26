@@ -75,6 +75,7 @@
   justify-content: space-between;
   flex-wrap: wrap;
   gap: 2rem;
+  position: relative;
 }
 
 .header {
@@ -88,6 +89,11 @@
   font-weight: 700;
   font-family: Georgia, serif;
   margin-bottom: 4px;
+
+  word-break: break-word;
+  overflow-wrap: anywhere;
+  hyphens: auto;
+  line-height: 1.2;
 }
 
 .infoRow {
@@ -174,7 +180,7 @@
 }
 
 .tagSection {
-  margin-top: 30px;
+  margin-top: 0px;
 }
 
 .tagSection h3 {
@@ -204,7 +210,7 @@
   top: 0;
   left: 0;
   z-index: 100;
-  height: 60px;
+  height: 40px;
   display: flex;
   align-items: center;
   justify-content: flex-start;
@@ -250,16 +256,19 @@
 }
 
 .leftColumn {
+  position: relative;
   display: flex;
   flex-direction: column;
   gap: 16px;
 }
 
 .rightColumn {
-  display: flex;
-  flex-direction: column;
-  gap: 24px;
+  position: absolute;
+  top: 100px; /* same as top padding of cardContent */
+  right: 40px; /* same as right padding of cardContent */
+  width: 260px;
 }
+
 .copiedPopup {
   margin-top: 8px;
   font-size: 14px;
@@ -276,83 +285,105 @@
   100% { opacity: 0; transform: translateY(-5px); }
 }
 
+.splitBadge {
+  display: inline-flex;
+  border-radius: 999px;
+  overflow: hidden;
+  font-weight: 600;
+  font-size: 16px;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.2);
+  line-height: 1;
+}
+
+.splitBadge .left {
+  background: #4a658a; /* lighter blue */
+  color: #fff;
+  padding: 4px 12px;
+  display: flex;
+  align-items: center;
+}
+
+.splitBadge .right {
+  background: #1c2534; /* darker navy */
+  color: #0bd718; /* green check OR white text */
+  padding: 5px 12px;
+  display: flex;
+  align-items: center;
+}
+
+.logoImage {
+  height: 40px;
+  width: 45px;
+  object-fit: contain;
+}
+
+
+
+
+
 @media (max-width: 768px) {
+  .card {
+    margin: 100px 16px 40px 16px;
+  }
+
+  .bannerWrapper {
+    height: 180px;
+    width: 94%;
+  }
+
+  .banner {
+    transform: translate(3%, 8%);
+    border-radius: 24px;
+  }
+
+  .serverIcon {
+    bottom: -70px;
+    left: 50%;
+    transform: translateX(-42%);
+    width: 100px;
+    height: 100px;
+    border-width: 4px;
+  }
+
   .cardContent {
-    display: flex;
+    padding: 90px 20px 30px 20px;
     flex-direction: column;
-    padding: 1.25rem;
-    gap: 1.25rem;
-  }
-
-  .header {
-    order: 1;
-    width: 100%;
-  }
-
-  .descriptionSection {
-    order: 2;
-    width: 100%;
-  }
-
-  .buttonsWrapper {
-    order: 3;
-    width: 100%;
-    display: flex;
-    flex-direction: column;
-    gap: 0.75rem;
-  }
-
-  .joinBtn,
-  .shareBtn {
-    width: 100%;
-    text-align: center;
-    font-size: 1rem;
-    padding: 0.75rem;
-  }
-
-  .tagSection {
-    order: 4;
-    width: 100%;
-  }
-
-  .tagList {
-    display: flex;
-    flex-wrap: wrap;
-    gap: 0.5rem;
-  }
-
-  .tag {
-    font-size: 0.875rem;
+    gap: 1.5rem;
   }
 
   .cardGrid {
     display: flex;
     flex-direction: column;
-    gap: 1.5rem;
+    gap: 24px;
   }
 
-  .leftColumn,
   .rightColumn {
+    position: static;
     width: 100%;
+    padding-top: 20px;
   }
 
-  .bannerWrapper {
-    position: relative;
-    width: 94%;
-    height: 215px;
+  .serverName {
+    font-size: 28px;
   }
 
-  .banner {
-    border-radius: 40px;
-    width: auto;
-    height: 200px;
-    max-height: 200px;
+  .description {
+    font-size: 16px;
   }
 
-  .serverIcon {
-    width: 100px;
-    height: 100px;
-    transform: translate(-60%, -60%);
-    border-width: 5px;
+  .descriptionSection {
+    margin-bottom: -50px; /* or even 4px if needed */
   }
+
+  .mainHeader {
+    justify-content: center;
+    text-align: center;
+  }
+
+  .logo {
+    display: flex;
+    align-items: center;
+    gap: 20px;
+  }
+
 }

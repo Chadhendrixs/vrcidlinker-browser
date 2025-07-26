@@ -1,0 +1,182 @@
+/* Reset and Base Styles */
+body, html {
+    margin: 0;
+    padding: 0;
+    width: 100%;
+    height: 100%;
+    font-family: Arial, sans-serif;
+    overflow: auto; /* Allow scrolling for the entire page */
+}
+
+/* Background for FAQ */
+.background {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100vw;
+    height: 100vh;
+    background: linear-gradient(45deg, #842E8F, #262860, #1D63AD, #1FAFBF, #25D9D9);
+    background-size: 300% 300%;
+    animation: gradientAnimation 10s infinite;
+    z-index: -1; /* Place behind the content */
+}
+
+/* Keyframes for Gradient Animation */
+@keyframes gradientAnimation {
+    0% {
+        background-position: 0% 50%;
+    }
+    50% {
+        background-position: 100% 50%;
+    }
+    100% {
+        background-position: 0% 50%;
+    }
+}
+
+.section-divider {
+    border: 0;
+    height: 1px;
+    background: rgba(255, 255, 255, 0.3); /* Light translucent divider */
+    margin: 30px 0; /* Add space before and after */
+}
+
+.support-link {
+    color: #1FAFBF; /* Brighter blue for visibility */
+    text-decoration: none;
+    font-weight: bold;
+}
+
+.support-link:hover {
+    color: #25D9D9; /* Slightly lighter on hover */
+    text-decoration: underline;
+}
+
+
+/* Back Button Styling */
+.back-button {
+    position: absolute;
+    top: 15px;
+    left: 15px;
+    background-color: rgba(38, 40, 60, 0.8);
+    color: #fff;
+    padding: 10px 15px;
+    border-radius: 5px;
+    text-decoration: none;
+    font-size: 1rem;
+    font-weight: bold;
+    box-shadow: 0 4px 10px rgba(0, 0, 0, 0.3);
+    transition: background-color 0.3s;
+    z-index: 10; /* Ensure it stays above other content */
+}
+
+.back-button:hover {
+    background-color: #1FAFBF;
+}
+
+/* Content Box Styling */
+.content-box {
+    position: relative; /* Ensures the box scrolls with the page */
+    margin: 50px auto; /* Adds spacing from the top and centers horizontally */
+    background-color: rgba(38, 40, 60, 0.8); /* Semi-transparent background */
+    color: #fff; /* White text color */
+    width: 80%;
+    max-width: 800px;
+    min-height: 500px;
+    border-radius: 15px;
+    box-shadow: 0 4px 10px rgba(0, 0, 0, 0.3);
+    padding: 20px;
+    overflow-y: auto; /* Enables scrolling for overflowing content */
+    text-align: left; /* Left-aligns text within the box */
+}
+
+/* Title Styling */
+.title {
+    font-size: 2rem;
+    margin-bottom: 20px;
+    text-align: center;
+    font-weight: bold;
+    color: #fff;
+}
+
+/* FAQ Content Styling */
+.faq-content {
+    list-style-type: disc; /* Dots for each question */
+    padding: 0 20px;
+}
+
+.faq-content li {
+    margin-bottom: 20px;
+}
+
+.faq-content h2 {
+    font-size: 1.2rem;
+    margin: 0 0 10px 0; /* Space between question and answer */
+}
+
+.faq-content p {
+    font-size: 1rem;
+    margin: 0;
+    line-height: 1.6;
+}
+
+.faq-content ul {
+    list-style-type: circle; /* Nested list for additional items */
+    margin: 10px 0 10px 20px; /* Indent nested lists */
+}
+
+.faq-content a {
+    color: #25D9D9;
+    text-decoration: none;
+}
+
+.faq-content a:hover {
+    text-decoration: underline;
+}
+
+.tos-content a {
+    color: #25D9D9;
+    text-decoration: none;
+}
+
+.exit-note a {
+    color: #25D9D9;
+    text-decoration: none;
+}
+
+/* Footer Styling */
+.footer {
+    position: fixed;
+    bottom: 10px;
+    left: 10px;
+    color: #fff;
+    font-size: 0.9rem;
+    text-align: left;
+    opacity: 0.8;
+}
+
+.footer a {
+    color: #25D9D9;
+    text-decoration: none;
+}
+
+.footer a:hover {
+    text-decoration: underline;
+}
+
+/* Responsive Adjustments */
+@media (max-width: 768px) {
+    .content-box {
+        width: 95%;
+        padding: 15px;
+    }
+
+    .back-button {
+        font-size: 0.9rem;
+        padding: 8px 12px;
+    }
+
+    .footer {
+        font-size: 0.8rem;
+    }
+}

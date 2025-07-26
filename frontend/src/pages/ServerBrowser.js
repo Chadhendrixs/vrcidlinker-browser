@@ -3,6 +3,7 @@ import { Link } from "react-router-dom";
 import { useMemo } from "react";
 import "./css/ServerBrowser.css";
 import TooltipPortal from "../TooltipPortal";
+import Footer from '../Footer';
 
 const API_URL = process.env.REACT_APP_API_URL;
 
@@ -250,6 +251,7 @@ export default function ServerBrowser() {
               >
                 🔍
               </button>
+              <img src="./favicon.ico" alt="Logo" className="logoImage" />
               <span className="logo-title">VRC LINKED</span>
             </div>
           </div>
@@ -413,6 +415,7 @@ export default function ServerBrowser() {
               >
                 🔍
               </div>
+              <div className="mobile-header-image"><img src="./favicon.ico" alt="Logo" className="logoImage" /></div>
               <div className="mobile-header-title">VRC LINKED</div>
             </div>
           </div>
@@ -830,6 +833,7 @@ export default function ServerBrowser() {
             </div>
           </TooltipPortal>
         )}
+        <Footer />
       </div>
     </div>
   );

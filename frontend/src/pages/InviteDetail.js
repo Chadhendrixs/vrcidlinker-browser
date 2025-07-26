@@ -3,6 +3,7 @@ import { useParams } from "react-router-dom";
 import styles from "./css/InviteDetail.module.css";
 import ColorThief from "colorthief";
 import { useRef } from "react";
+import Footer from '../Footer';
 
 const API_URL = process.env.REACT_APP_API_URL;
 
@@ -140,6 +141,7 @@ export default function InviteDetail() {
       <header className={styles.mainHeader}>
         <div className={styles.headerContent}>
           <div className={styles.logo}>
+            <a style={{ textDecoration: "none" }} href="../servers"><img src="../favicon.ico" alt="Logo" className={styles.logoImage} /></a>
             <a style={{ textDecoration: "none" }} className={styles.logoTitle} href="../servers">VRC LINKED</a>
           </div>
         </div>
@@ -167,10 +169,16 @@ export default function InviteDetail() {
                     • {server.memberCount?.toLocaleString() ?? "?"} Members
                   </span>
                   {server.crossverify && (
-                    <span className={styles.iconBadge}>⇄ 🗸</span>
+                    <span className={styles.splitBadge}>
+                      <span className={styles.left}>⇄</span>
+                      <span className={styles.right}>🗸</span>
+                    </span>
                   )}
                   {server.customTag && (
-                    <span className={styles.customTag}>Tag: {server.customTag}</span>
+                    <span className={styles.splitBadge}>
+                      <span className={styles.left}>Tag:</span>
+                      <span className={styles.right}>{server.customTag}</span>
+                    </span>
                   )}
                 </div>
               </div>
@@ -203,7 +211,6 @@ export default function InviteDetail() {
             </div>
           </div>
         </div>
-
       </div>
     </div>
   );

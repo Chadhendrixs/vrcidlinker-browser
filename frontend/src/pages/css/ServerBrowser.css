@@ -131,7 +131,19 @@ body {
     position: absolute;
     left: 50%;
     top: 50%;
-    transform: translate(-60%, -50%);
+    transform: translate(-40%, -50%);
+    font-size: 1.25rem;
+    font-weight: bold;
+    color: white;
+    letter-spacing: 1px;
+    white-space: nowrap;
+  }
+
+  .mobile-header-image {
+    position: absolute;
+    left: 50%;
+    top: 50%;
+    transform: translate(-250%, -50%);
     font-size: 1.25rem;
     font-weight: bold;
     color: white;
@@ -1399,7 +1411,17 @@ body {
   align-items: center;
 }
 
+.logoImage {
+  height: 40px;
+  width: 45px;
+  object-fit: contain;
+}
 
+.logo {
+  display: flex;
+  align-items: center;
+  gap: 12px; /* space between logo and text */
+}
 
 
 
