@@ -42,6 +42,7 @@ app.add_middleware(
         "http://localhost:3000",
         "https://vrcidlinker-browser-frontend.onrender.com"
         "https://vrclinked.com",
+        "https://www.vrclinked.com"
         ],
     allow_credentials=True,
     allow_methods=["*"],
