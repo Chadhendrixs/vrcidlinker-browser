@@ -90,12 +90,13 @@ def get_invite(code: str):
         db.close()
 
 @app.post("/publish")
-def publish_server(invite_code: str, tags: str, crossverify: bool, request: Request):
+def publish_server(server_id: str, invite_code: str, tags: str, crossverify: bool, request: Request):
     verify_api_key(request)
     db = SessionLocal()
 
-    existing = db.query(Server).filter(Server.invite_code == invite_code).first()
-    server = existing or Server(invite_code=invite_code)
+    existing = db.query(Server).filter(Server.server_id == server_id).first()
+    server = existing or Server(server_id=server_id)
+    server.invite_code = invite_code
     server.tags = tags
     server.crossverify = crossverify
 
@@ -127,6 +128,27 @@ def publish_server(invite_code: str, tags: str, crossverify: bool, request: Requ
     except Exception as e:
         db.rollback()
         raise HTTPException(status_code=500, detail=f"Error fetching metadata: {str(e)}")
+
+    finally:
+        db.close()
+
+@app.delete("/unpublish")
+def unpublish_server(server_id: str, request: Request):
+    verify_api_key(request)
+    db = SessionLocal()
+
+    try:
+        server = db.query(Server).filter(Server.server_id == server_id).first()
+        if not server:
+            raise HTTPException(status_code=404, detail="Server not found")
+
+        db.delete(server)
+        db.commit()
+        return {"status": "deleted"}
+
+    except Exception as e:
+        db.rollback()
+        raise HTTPException(status_code=500, detail=f"Failed to delete server: {str(e)}")
 
     finally:
         db.close()

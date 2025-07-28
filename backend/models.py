@@ -5,6 +5,7 @@ class Server(Base):
     __tablename__ = "servers"
 
     id = Column(Integer, primary_key=True, index=True)
+    server_id = Column(String, unique=True, nullable=False)
     invite_code = Column(String, unique=True, index=True)
     tags = Column(String)
     crossverify = Column(Boolean, default=True)
