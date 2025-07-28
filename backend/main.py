@@ -168,7 +168,7 @@ async def stats(request: Request, payload: StatsPayload = None):
 def startup_event():
     #ensure_flags_exist()
     #print("Flags ran!")
-    print("Updating servers on launch...")
+    print("Updating servers on launch...", flush=True)
     update_all_servers()
 
 @app.get("/")

@@ -89,7 +89,7 @@ def update_all_servers():
         #print("Updated server:", server.banner_url)
         # Optional: log every 25
         if i % 25 == 0:
-            print(f"Updated {i}/{len(servers)} servers")
+            print(f"Updated {i}/{len(servers)} servers", flush=True)
     
     db.commit()
     db.close()
