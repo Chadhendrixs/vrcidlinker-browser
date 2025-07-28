@@ -8,7 +8,7 @@ const Footer = () => {
       <div style={styles.content}>
         <p style={styles.text}>
           &copy; {currentYear} CHCreations ·{' '}
-          <a href="/terms.html" style={styles.link}>Terms of Service</a> ·{' '}
+          <a href="https://vrcidlinker.com/terms.html" style={styles.link}>Terms of Service</a> ·{' '}
           <a href="https://vrcidlinker.com/vrl/" target="_blank" style={styles.link}>vrcidlinker.com</a> ·{' '}
           <a href="https://discord.gg/BH2QA8Jezs" target="_blank" rel="noopener noreferrer" style={styles.link}>
             Support Discord
