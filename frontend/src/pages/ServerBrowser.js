@@ -240,6 +240,8 @@ export default function ServerBrowser() {
   return (
     <div className={`app-container ${menuOpen ? "menu-open" : ""} ${isMobile ? "mobile" : ""}`}>
       {/* --- TOP HEADER --- */}
+      <script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-4469288001060919"
+     crossorigin="anonymous"></script>
       {!isMobile && (
         <header className="main-header">
           <div className="header-content">

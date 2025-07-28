@@ -137,6 +137,8 @@ export default function InviteDetail() {
 
   return (
     <div className={`${styles.inviteContainer} ${isMobile ? styles.mobile : ""}`}>
+      <script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-4469288001060919"
+     crossorigin="anonymous"></script>
       {/* --- TOP HEADER --- */}
       <header className={styles.mainHeader}>
         <div className={styles.headerContent}>
