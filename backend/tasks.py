@@ -7,6 +7,8 @@ from database import engine
 import json
 from pathlib import Path
 from fastapi import FastAPI, HTTPException, Request, APIRouter, Query, Response
+import nacl.signing
+import nacl.exceptions
 
 STATS_PATH = Path("server_stats.json")
 
