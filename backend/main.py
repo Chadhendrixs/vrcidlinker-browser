@@ -199,6 +199,8 @@ async def discord_webhook(request: Request):
 
     data = await request.json()
 
+    print("Received Discord event:", data, flush=True)
+
     # Handle PING (type 0)
     if data.get("type") == 0:
         print("Received PING event", flush=True)
