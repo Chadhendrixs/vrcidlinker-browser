@@ -198,7 +198,6 @@ async def discord_webhook(request: Request):
         raise HTTPException(status_code=401, detail="Invalid signature")
 
     data = await request.json()
-
     print("Received Discord event:", data, flush=True)
 
     # Handle PING (type 0)
@@ -206,8 +205,12 @@ async def discord_webhook(request: Request):
         print("Received PING event", flush=True)
         return Response(status_code=204)
 
-    event_type = request.headers.get("X-Discord-Event")
-    guild_id = data.get("guild_id")
+    # Extract event and entitlement data properly
+    event = data.get("event", {})
+    event_type = event.get("type")
+    entitlement_data = event.get("data", {})
+
+    guild_id = entitlement_data.get("guild_id")
 
     if not guild_id:
         print("Ignoring event: no guild_id in payload", flush=True)
@@ -247,6 +250,7 @@ async def discord_webhook(request: Request):
         db.close()
 
     return {"status": "ok"}
+
 
 @app.on_event("startup")
 def startup_event():
