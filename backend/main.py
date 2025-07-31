@@ -1,4 +1,4 @@
-from fastapi import FastAPI, HTTPException, Request, APIRouter, Query, Response, Request
+from fastapi import FastAPI, HTTPException, Request, APIRouter, Query, Response
 from database import SessionLocal, engine, Base
 from fastapi.middleware.cors import CORSMiddleware
 from pydantic import BaseModel
