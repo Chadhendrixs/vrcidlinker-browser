@@ -1,4 +1,4 @@
-from fastapi import FastAPI, HTTPException, Request, APIRouter, Query
+from fastapi import FastAPI, HTTPException, Request, APIRouter, Query, Response
 from database import SessionLocal, engine, Base
 from fastapi.middleware.cors import CORSMiddleware
 from pydantic import BaseModel
@@ -7,14 +7,17 @@ from dotenv import load_dotenv
 from database import Base
 import requests
 import os
-from tasks import update_all_servers, build_discord_image_url, ensure_flags_exist, save_stats, load_stats
+from tasks import update_all_servers, build_discord_image_url, ensure_flags_exist, save_stats, load_stats, verify_signature
 from apscheduler.schedulers.background import BackgroundScheduler
 import uvicorn
 import json
+import nacl.signing
+import nacl.exceptions
 
 load_dotenv()
 
 API_KEY = os.getenv("PUBLISH_API_KEY")
+DISCORD_PUBLIC_KEY = os.getenv("DISCORD_PUBLIC_KEY")
 
 def verify_api_key(request: Request):
     key = request.headers.get("X-API-Key")
@@ -185,6 +188,63 @@ async def stats(request: Request, payload: StatsPayload = None):
         return {"status": "ok"}
     else:
         return server_stats
+
+@app.post("/discord-webhook")
+async def discord_webhook(request: Request):
+    raw_body = await request.body()
+
+    # Validate Discord request signature
+    if not verify_signature(request, raw_body, DISCORD_PUBLIC_KEY):
+        raise HTTPException(status_code=401, detail="Invalid signature")
+
+    data = await request.json()
+
+    # Handle PING (type 0)
+    if data.get("type") == 0:
+        print("Received PING event", flush=True)
+        return Response(status_code=204)
+
+    event_type = request.headers.get("X-Discord-Event")
+    guild_id = data.get("guild_id")
+
+    if not guild_id:
+        print("Ignoring event: no guild_id in payload", flush=True)
+        return {"status": "ignored", "reason": "No guild_id in event"}
+
+    db = SessionLocal()
+    try:
+        server = db.query(Server).filter(Server.server_id == str(guild_id)).first()
+
+        if event_type == "ENTITLEMENT_CREATE":
+            if server:
+                server.promoted = True
+                db.commit()
+                print(f"Server {guild_id} promoted (ENTITLEMENT_CREATE)", flush=True)
+            else:
+                print(f"No server found for guild_id {guild_id} (ENTITLEMENT_CREATE)", flush=True)
+
+        elif event_type == "ENTITLEMENT_UPDATE":
+            print(f"Entitlement updated for {guild_id} (ENTITLEMENT_UPDATE)", flush=True)
+
+        elif event_type == "ENTITLEMENT_DELETE":
+            if server:
+                server.promoted = False
+                db.commit()
+                print(f"Server {guild_id} unpromoted (ENTITLEMENT_DELETE)", flush=True)
+            else:
+                print(f"No server found for guild_id {guild_id} (ENTITLEMENT_DELETE)", flush=True)
+
+        else:
+            print(f"Unhandled event type: {event_type}", flush=True)
+
+    except Exception as e:
+        db.rollback()
+        print(f"Error processing entitlement for guild_id {guild_id}: {e}", flush=True)
+        raise HTTPException(status_code=500, detail="DB error")
+    finally:
+        db.close()
+
+    return {"status": "ok"}
 
 @app.on_event("startup")
 def startup_event():

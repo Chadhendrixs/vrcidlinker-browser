@@ -103,3 +103,17 @@ def load_stats():
         with STATS_PATH.open("r") as f:
             return json.load(f)
     return {"server_count": 0, "verified_users": 0}
+
+def verify_signature(request: Request, raw_body: bytes, PUBLIC_KEY: str):
+    signature = request.headers.get("X-Signature-Ed25519")
+    timestamp = request.headers.get("X-Signature-Timestamp")
+
+    if not signature or not timestamp:
+        return False
+
+    try:
+        verify_key = nacl.signing.VerifyKey(bytes.fromhex(PUBLIC_KEY))
+        verify_key.verify(f"{timestamp}{raw_body.decode()}".encode(), bytes.fromhex(signature))
+        return True
+    except nacl.exceptions.BadSignatureError:
+        return False
