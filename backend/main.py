@@ -71,6 +71,7 @@ def get_invite(code: str):
             "member_count": server.member_count,
             "custom_tag": server.custom_tag,
             "crossverify": server.crossverify,
+            "promoted": server.promoted,
             "boost_tier": server.boost_tier,
             "icon_url": server.icon_url,
             "banner_url": server.banner_url,
