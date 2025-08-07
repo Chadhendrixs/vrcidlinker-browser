@@ -57,7 +57,10 @@ Base.metadata.create_all(bind=engine)
 @app.get("/servers")
 def get_servers():
     db = SessionLocal()
-    return db.query(Server).all()
+    try:
+        return db.query(Server).all()
+    finally:
+        db.close()
 
 @app.get("/invite/{code}")
 def get_invite(code: str):
