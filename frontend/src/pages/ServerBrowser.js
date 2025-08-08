@@ -4,6 +4,7 @@ import { useMemo } from "react";
 import "./css/ServerBrowser.css";
 import TooltipPortal from "../TooltipPortal";
 import Footer from '../Footer';
+import ColorThief from "colorthief";
 
 const API_URL = process.env.REACT_APP_API_URL;
 
@@ -26,6 +27,39 @@ export default function ServerBrowser() {
   const [mouseY, setMouseY] = useState(0);
   const [selectedPromotedServers, setSelectedPromotedServers] = useState([]);
 
+  function hashStringToColor(str) {
+    let hash = 0;
+    for (let i = 0; i < str.length; i++) {
+      hash = str.charCodeAt(i) + ((hash << 5) - hash);
+    }
+    const r = (hash >> 0) & 0xff;
+    const g = (hash >> 8) & 0xff;
+    const b = (hash >> 16) & 0xff;
+    return `rgb(${r}, ${g}, ${b})`;
+  }
+
+  function applyGradientFromIconOrName(iconUrl, name, el, colorThief) {
+    if (iconUrl) {
+      const img = new Image();
+      img.crossOrigin = "anonymous";
+      img.src = iconUrl;
+
+      img.onload = () => {
+        try {
+          const palette = colorThief.getPalette(img, 2);
+          const c1 = `rgb(${palette[0][0]}, ${palette[0][1]}, ${palette[0][2]})`;
+          const c2 = `rgb(${palette[1][0]}, ${palette[1][1]}, ${palette[1][2]})`;
+          el.style.background = `linear-gradient(135deg, ${c1}, ${c2})`;
+        } catch {
+          const base = hashStringToColor(name);
+          el.style.background = `linear-gradient(135deg, ${base}, #000)`;
+        }
+      };
+    } else {
+      const base = hashStringToColor(name);
+      el.style.background = `linear-gradient(135deg, ${base}, #000)`;
+    }
+  }
 
 
 
@@ -236,6 +270,23 @@ export default function ServerBrowser() {
       document.removeEventListener("click", handleClickOutside);
     };
   }, [hoveredTooltip]);
+
+  useEffect(() => {
+    const colorThief = new ColorThief();
+
+    const serverCards = document.querySelectorAll(".server-card");
+
+    serverCards.forEach((card) => {
+      // only apply gradient if there's no banner URL
+      const hasBanner = card.style.backgroundImage;
+      if (hasBanner) return;
+
+      const icon = card.querySelector(".server-icon");
+      const name = card.querySelector(".server-name")?.textContent || "Server";
+
+      applyGradientFromIconOrName(icon?.src, name, card, colorThief);
+    });
+  }, [servers]);
 
   return (
     <div className={`app-container ${menuOpen ? "menu-open" : ""} ${isMobile ? "mobile" : ""}`}>

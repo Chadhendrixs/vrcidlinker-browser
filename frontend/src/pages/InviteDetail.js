@@ -3,7 +3,6 @@ import { useParams } from "react-router-dom";
 import styles from "./css/InviteDetail.module.css";
 import ColorThief from "colorthief";
 import { useRef } from "react";
-import Footer from '../Footer';
 
 const API_URL = process.env.REACT_APP_API_URL;
 
@@ -185,7 +184,14 @@ export default function InviteDetail() {
 
               <div className={styles.descriptionSection}>
                 <h2 className={styles.aboutTitle}>ABOUT</h2>
-                <p className={styles.description}>{server.description}</p>
+                <p className={styles.description}>
+                  {server.description}
+                  {server.description.length < 100 && (
+                    <span>
+                      {"‎ ".repeat(85 - server.description.length)}
+                    </span>
+                  )}
+                </p>
               </div>
             </div>
 
